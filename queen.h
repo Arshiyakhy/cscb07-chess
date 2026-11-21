@@ -7,5 +7,6 @@ protected:
 public:
     explicit Queen(Colour colour): Piece(colour) {}
     int value() const override;
+    std::vector<Move> candidateMoves(const Board &b, const Position &from) const override;
 };
 #endif

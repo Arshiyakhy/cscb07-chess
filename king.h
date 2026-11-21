@@ -8,5 +8,6 @@ protected:
 public:
     explicit King(Colour colour): Piece(colour) {} //cnstructor takes the colour and passes it 
     int value() const override;
+    std::vector<Move> candidateMoves(const Board &b, const Position &from) const override;
 };
 #endif

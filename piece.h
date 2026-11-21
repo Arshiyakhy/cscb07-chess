@@ -2,6 +2,8 @@
 #define PIECE_H
 #include "position.h"
 #include "colour.h"
+#include "move.h"
+#include <vector>
 
 class Piece{
 private:
@@ -24,5 +26,8 @@ public:
     } 
     char symbol() const;
     virtual int value() const=0; //not protected bc of ai stuff in the future
+    class Board; //forward declaration of board class so we can use it in the isValidMove function
+    virtual std::vector<Move> candidateMoves(const Board &b, const Position &from) const = 0;
+
 };
 #endif
