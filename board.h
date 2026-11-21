@@ -7,7 +7,7 @@
 
 class Board {
 private:
-    std::array<std::array<std::unique_ptr<piece>, 8>, 8> grid;
+    std::array<std::array<std::unique_ptr<Piece>, 8>, 8> grid;
 public:
     void setupStart();
     Piece* pieceAt(const Position &pos) const;

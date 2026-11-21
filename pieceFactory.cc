@@ -12,7 +12,7 @@ std::unique_ptr<Piece> makePiece(char letter){
     Colour colour = std::isupper(c) ? Colour::WHITE : Colour::BLACK;
 
     switch(std::toupper(c)){
-        case 'K' : return std::make_unique<king>(colour);
+        case 'K' : return std::make_unique<King>(colour);
         case 'Q' : return std::make_unique<Queen>(colour);
         case 'R' : return std::make_unique<Rook>(colour);
         case 'B' : return std::make_unique<Bishop>(colour);

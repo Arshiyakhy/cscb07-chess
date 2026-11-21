@@ -26,11 +26,11 @@ Piece* Board::pieceAt(const Position &pos) const{
 }
 
 void Board::placePiece(std::unique_ptr<Piece> piece, const Position &pos){
-    if(!pos.inBounds()) return nullptr;
-    gird[pos.row][pos.col] = std::move(piece);
+    if(!pos.inBounds()) return;
+    grid[pos.row][pos.col] = std::move(piece);
 }
 
 void Board::removePiece(const Position &pos){
-    if(!pos.inBounds()) return nullptr;
-    gird[pos.row][pos.col] = nullptr;
+    if(!pos.inBounds()) return;
+    grid[pos.row][pos.col] = nullptr;
 }
