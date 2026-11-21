@@ -5,6 +5,7 @@
 #include "piece.h"
 #include "position.h"
 #include <iostream>
+#include "colour.h"
 
 class Board {
 private:
@@ -15,6 +16,7 @@ public:
     void placePiece(std::unique_ptr<Piece> piece, const Position &pos);
     void removePiece(const Position &pos);
     friend std::ostream &operator<<(std::ostream &out, const Board &b);
+    bool isAttacked(const Position &pos, Colour byColour)const;
 };
 
 #endif 

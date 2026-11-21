@@ -1,6 +1,7 @@
 #include "board.h"
 #include <string>
 #include "pieceFactory.h"
+#include <vector>
 
 void Board::setupStart(){
     const std::array<std::string, 8>layout = {
@@ -49,4 +50,19 @@ std::ostream &operator<<(std::ostream &out, const Board &b){
     }
     out<<"\n"<<"  "<<"abcdefgh"<< "\n";
     return out;
+}
+
+bool Board::isAttacked(const Position &pos, Colour byColour)const{
+    for(int r=0; r<8; ++r){
+        for(int c=0; c<8; ++c){
+            Position from{r, c};
+            Piece *p = pieceAt(from);
+            if (!p || p->getColour() != byColour) continue;
+            std::vector<Move> moves = p->candidateMoves(*this,from);
+            for(const auto &m : moves){
+                if(m.to == pos) return true;
+            }
+        }
+    }
+    return false;
 }

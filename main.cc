@@ -1,80 +1,39 @@
 #include <iostream>
-#include <string>
-#include "position.h"
-#include "colour.h"
-#include "piece.h"
-#include "king.h"
-#include "queen.h"
-#include "bishop.h"
-#include "knight.h"
-#include "pawn.h"
-#include "rook.h"
-#include <memory>
-#include <vector>
 #include "board.h"
 #include "pieceFactory.h"
-using namespace std;
+#include "position.h"
+#include "colour.h"
 
-int main(){
-//     King king(Colour::WHITE);
-//     cout << "King symbol: " << king.symbol() << std::endl;
-//     cout << "King value: " << king.value() << std::endl;
-//     King blackKing(Colour::BLACK);
-//     cout << "Black King symbol: " << blackKing.symbol() << std::endl;
-//     cout << "Black King value: " << blackKing.value() << std::endl;
-//     Queen queen(Colour::WHITE);
-//     cout << "Queen symbol: " << queen.symbol() << std::endl;
-//     cout << "Queen value: " << queen.value() << std::endl;
-//     Bishop bishop(Colour::WHITE);
-//     cout << "Bishop symbol: " << bishop.symbol() << std::endl;
-//     cout << "Bishop value: " << bishop.value() << std::endl;
-//     Knight knight(Colour::WHITE);
-//     cout << "Knight symbol: " << knight.symbol() << std::endl;
-//     cout << "Knight value: " << knight.value() << std::endl;
-//     Pawn pawn(Colour::WHITE);
-//     cout << "Pawn symbol: " << pawn.symbol() << std::endl;
-//     cout << "Pawn value: " << pawn.value() << std::endl;
-//     Rook rook(Colour::WHITE);
-//     cout << "Rook symbol: " << rook.symbol() << std::endl;
-//     cout << "Rook value: " << rook.value() << std::endl;
-//     Queen blackQueen(Colour::BLACK);
-//     cout << "Black Queen symbol: " << blackQueen.symbol() << std::endl;
-//     cout << "Black Queen value: " << blackQueen.value() << std::endl;
-//     Bishop blackBishop(Colour::BLACK);
-//     cout << "Black Bishop symbol: " << blackBishop.symbol() << std::endl;
-//     cout << "Black Bishop value: " << blackBishop.value() << std::endl;
-//     Knight blackKnight(Colour::BLACK);
-//     cout << "Black Knight symbol: " << blackKnight.symbol() << std::endl;
-//     cout << "Black Knight value: " << blackKnight.value() << std::endl;
-//     Pawn blackPawn(Colour::BLACK);
-//     cout << "Black Pawn symbol: " << blackPawn.symbol() << std::endl;
-//     cout << "Black Pawn value: " << blackPawn.value() << std::endl;
-//     Rook blackRook(Colour::BLACK);
-//     cout << "Black Rook symbol: " << blackRook.symbol() << std::endl;
-//     cout << "Black Rook value: " << blackRook.value() << std::endl;
-//     std::vector<std::unique_ptr<Piece>> pieces;
-// pieces.push_back(std::make_unique<King>(Colour::WHITE));
-// pieces.push_back(std::make_unique<Knight>(Colour::BLACK));
+int main() {
+    std::cout << std::boolalpha;   // print true/false instead of 1/0
 
-// for (const auto &p : pieces) {
-//     std::cout << p->symbol() << " " << p->value() << "\n";
-// }
-    Board b;
-    b.setupStart();
-    Piece *p = b.pieceAt(Position::fromString("e2"));
-if (p) std::cout << p->symbol() << "\n";      // P
+    Board b;   // starts empty, no setupStart()
+    Position e1 = Position::fromString("e1");
+    Position e2 = Position::fromString("e2");
+    Position e8 = Position::fromString("e8");
 
-p = b.pieceAt(Position::fromString("e8"));
-if (p) std::cout << p->symbol() << "\n";      // k
+    // Test 1: black rook on e8, white king on e1, nothing between
+    b.placePiece(makePiece('r'), e8);
+    b.placePiece(makePiece('K'), e1);
+    std::cout << b;
+    std::cout << "Test 1, e1 attacked by black (expect true): "
+              << b.isAttacked(e1, Colour::BLACK) << "\n\n";
 
-p = b.pieceAt(Position::fromString("e4"));
-std::cout << (p ? "piece" : "empty") << "\n"; // empty
+    // Test 2: white bishop on e2 blocks the rook
+    b.placePiece(makePiece('B'), e2);
+    std::cout << b;
+    std::cout << "Test 2, e1 attacked by black (expect false): "
+              << b.isAttacked(e1, Colour::BLACK) << "\n";
 
-b.placePiece(makePiece('Q'), Position::fromString("e4"));
-std::cout << b.pieceAt(Position::fromString("e4"))->symbol() << "\n";  // Q
+    // Test 3: white never attacks its own king's square
+    std::cout << "Test 3, e1 attacked by white (expect false): "
+              << b.isAttacked(e1, Colour::WHITE) << "\n\n";
 
-b.removePiece(Position::fromString("e4"));
-std::cout << (b.pieceAt(Position::fromString("e4")) ? "piece" : "empty") << "\n"; // empty
-std::cout << b;
+    // Test 4: remove the bishop, the attack comes back
+    b.removePiece(e2);
+    std::cout << b;
+    std::cout << "Test 4, e1 attacked by black (expect true): "
+              << b.isAttacked(e1, Colour::BLACK) << "\n";
+
     return 0;
 }
