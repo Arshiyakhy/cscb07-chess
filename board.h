@@ -4,6 +4,7 @@
 #include <memory>
 #include "piece.h"
 #include "position.h"
+#include <iostream>
 
 class Board {
 private:
@@ -13,6 +14,7 @@ public:
     Piece* pieceAt(const Position &pos) const;
     void placePiece(std::unique_ptr<Piece> piece, const Position &pos);
     void removePiece(const Position &pos);
+    friend std::ostream &operator<<(std::ostream &out, const Board &b);
 };
 
 #endif 

@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 #include "board.h"
+#include "pieceFactory.h"
 using namespace std;
 
 int main(){
@@ -60,5 +61,20 @@ int main(){
 // }
     Board b;
     b.setupStart();
+    Piece *p = b.pieceAt(Position::fromString("e2"));
+if (p) std::cout << p->symbol() << "\n";      // P
+
+p = b.pieceAt(Position::fromString("e8"));
+if (p) std::cout << p->symbol() << "\n";      // k
+
+p = b.pieceAt(Position::fromString("e4"));
+std::cout << (p ? "piece" : "empty") << "\n"; // empty
+
+b.placePiece(makePiece('Q'), Position::fromString("e4"));
+std::cout << b.pieceAt(Position::fromString("e4"))->symbol() << "\n";  // Q
+
+b.removePiece(Position::fromString("e4"));
+std::cout << (b.pieceAt(Position::fromString("e4")) ? "piece" : "empty") << "\n"; // empty
+std::cout << b;
     return 0;
 }

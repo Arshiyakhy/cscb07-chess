@@ -34,3 +34,19 @@ void Board::removePiece(const Position &pos){
     if(!pos.inBounds()) return;
     grid[pos.row][pos.col] = nullptr;
 }
+
+std::ostream &operator<<(std::ostream &out, const Board &b){
+    for(int r=0; r<8; ++r){
+        out<<8-r<<' ';
+        for(int c=0; c<8; ++c){
+            if(b.grid[r][c]) out<< b.grid[r][c]->symbol();
+            else {
+                if((c+r)%2 == 0) out<< ' ';
+                else out<< '_';
+            }
+        }
+        out<< "\n";
+    }
+    out<<"\n"<<"  "<<"abcdefgh"<< "\n";
+    return out;
+}
