@@ -94,6 +94,16 @@ void Board::applyMove(const Move &m) {
     toCell = std::move(fromCell);                          // move the piece
     toCell->setHasMoved(true);                             // the piece is in toCell now
 
+    // promotion: swap the pawn on 'to' for the chosen piece
+    if (m.type == MoveType::PROMOTION) {
+        info.promotedPawn = std::move(toCell);                     // keep the original pawn
+        char letter = m.promotion;                                 // 'Q', 'R', 'B' or 'N'
+        if (info.promotedPawn->getColour() == Colour::BLACK) {
+            letter = static_cast<char>(std::tolower(static_cast<unsigned char>(letter)));
+        }
+        toCell = makePiece(letter);                                // new piece on 'to'
+        toCell->setHasMoved(true);
+    }
     history.push_back(std::move(info));                    // save for undo
 }
 
@@ -106,6 +116,11 @@ void Board::undoMove() {
     auto &fromCell = grid[info.move.from.row][info.move.from.col];
     auto &toCell   = grid[info.move.to.row][info.move.to.col];
 
+    // promotion: put the original pawn back on 'to' (the queen gets deleted)
+    if (info.move.type == MoveType::PROMOTION) {
+        toCell = std::move(info.promotedPawn);
+    }
+    
     fromCell = std::move(toCell);                         // piece goes back to 'from'
     fromCell->setHasMoved(info.movedBefore);              // restore its old flag
     toCell = std::move(info.capturedPiece);               // captured piece back (or empty)

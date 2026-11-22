@@ -12,6 +12,7 @@
 struct UndoInfo{
     Move move;
     std::unique_ptr<Piece> capturedPiece;
+    std::unique_ptr<Piece> promotedPawn;
     bool movedBefore;
 };
 
