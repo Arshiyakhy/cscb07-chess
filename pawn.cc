@@ -1,5 +1,6 @@
 #include "pawn.h"
 #include "board.h"
+#include <cstdlib>
 
 void Pawn::addPromotionMoves(std::vector<Move> &moves, const Position &from, const Position &to) const {
     const char options[4] = {'Q', 'R', 'B', 'N'};
@@ -15,6 +16,11 @@ std::vector<Move> Pawn::candidateMoves(const Board &b, const Position &from) con
     int dir = (getColour() == Colour::WHITE) ? -1 : 1;
     int startRow = (getColour() == Colour::WHITE) ? 6 : 1;
     int lastRow = (getColour() == Colour::WHITE) ? 0 : 7;
+    const Move *last = b.lastMove();
+    if (last && last->type == MoveType::DOUBLE_PAWN && last->to.row == from.row && std::abs(last->to.col - from.col) == 1){
+        Position en_passant{dir+from.row,last->to.col};
+        moves.push_back(Move{from, en_passant, MoveType::EN_PASSANT});
+    }
     Position one{dir+from.row, from.col};
     if(one.inBounds() && !b.pieceAt(one)){
         if(one.row == lastRow){
