@@ -1,48 +1,45 @@
 #include <iostream>
+#include <string>
 #include "board.h"
 #include "pieceFactory.h"
 #include "position.h"
 #include "move.h"
 
+// turn a Position into "e2" for printing
+std::string sq(const Position &p) {
+    std::string s;
+    s += static_cast<char>('a' + p.col);
+    s += static_cast<char>('8' - p.row);
+    return s;
+}
+
+void printMoves(const std::vector<Move> &moves) {
+    for (const auto &m : moves) {
+        std::cout << sq(m.from) << " -> " << sq(m.to) << "\n";
+    }
+    std::cout << "Total: " << moves.size() << "\n";
+}
+
 int main() {
-    std::cout << std::boolalpha;
-
-    // ---------- Test 1: normal move + undo on the starting board ----------
+    // ---------- Test 1: pinned bishop ----------
     Board b;
-    b.setupStart();
-    Position e2 = Position::fromString("e2");
-    Position e4 = Position::fromString("e4");
+    b.placePiece(makePiece('K'), Position::fromString("e1"));
+    b.placePiece(makePiece('B'), Position::fromString("e2"));
+    b.placePiece(makePiece('r'), Position::fromString("e8"));
 
-    std::cout << "Test 1: start\n" << b;
+    std::cout << "Test 1: bishop on e2 is pinned by the rook\n" << b;
+    std::cout << "Legal moves for white (expect only king moves: d1 f1 d2 f2, total 4):\n";
+    printMoves(b.legalMoves(Colour::WHITE));
 
-    b.applyMove(Move{e2, e4, MoveType::DOUBLE_PAWN});
-    std::cout << "\nAfter e2 -> e4 (pawn should be on e4)\n" << b;
+    // ---------- Test 2: starting position ----------
+    Board s;
+    s.setupStart();
+    std::cout << "\nTest 2: starting position\n";
+    std::cout << "Legal moves for white (expect total 20: 16 pawn + 4 knight):\n";
+    printMoves(s.legalMoves(Colour::WHITE));
 
-    b.undoMove();
-    std::cout << "\nAfter undo (should be the starting board)\n" << b;
-
-    // hasMoved must be false again, or the pawn could never double-step after this
-    std::cout << "e2 pawn hasMoved after undo (expect false): "
-              << b.pieceAt(e2)->getHasMoved() << "\n";
-
-    // ---------- Test 2: capture + undo ----------
-    Board c;
-    Position d5 = Position::fromString("d5");
-    c.placePiece(makePiece('P'), e4);
-    c.placePiece(makePiece('n'), d5);
-
-    std::cout << "\nTest 2: P on e4, n on d5\n" << c;
-
-    c.applyMove(Move{e4, d5});
-    std::cout << "\nAfter e4 takes d5 (P on d5, knight gone)\n" << c;
-
-    c.undoMove();
-    std::cout << "\nAfter undo (P on e4, n on d5 again)\n" << c;
-
-    // ---------- Test 3: undo with empty history does nothing ----------
-    Board d;
-    d.undoMove();
-    std::cout << "\nTest 3: undo on an empty history didn't crash\n";
+    // ---------- Test 3: the board is unchanged after legalMoves ----------
+    std::cout << "\nTest 3: board after calling legalMoves (should still be the start)\n" << s;
 
     return 0;
 }

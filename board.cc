@@ -110,3 +110,22 @@ void Board::undoMove() {
     fromCell->setHasMoved(info.movedBefore);              // restore its old flag
     toCell = std::move(info.capturedPiece);               // captured piece back (or empty)
 }
+
+std::vector<Move> Board::legalMoves(Colour colour){
+    std::vector<Move> result;
+    for(int r=0; r<8; ++r){
+        for(int c=0; c<8; ++c){
+            Position from{r, c};
+            Piece *p = pieceAt(from); 
+            if(p && p->getColour()==colour){
+                std::vector<Move> moves = p->candidateMoves(*this,from);
+                for(const auto &m:moves){
+                    applyMove(m);
+                    if(!isInCheck(colour)) result.push_back(m);
+                    undoMove();
+                }
+            }
+        }
+    } 
+    return result;   
+}

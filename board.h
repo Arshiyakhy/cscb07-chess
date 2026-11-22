@@ -29,6 +29,7 @@ public:
     bool isInCheck(Colour colour)const;
     void applyMove(const Move &m);
     void undoMove();
+    std::vector<Move> legalMoves(Colour colour);
 };
 
 #endif 
