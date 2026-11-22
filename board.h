@@ -30,6 +30,8 @@ public:
     void applyMove(const Move &m);
     void undoMove();
     std::vector<Move> legalMoves(Colour colour);
+    bool isCheckmate(Colour colour);
+    bool isStalemate(Colour colour);
 };
 
 #endif 

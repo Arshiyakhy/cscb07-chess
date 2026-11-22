@@ -1,45 +1,36 @@
 #include <iostream>
-#include <string>
 #include "board.h"
 #include "pieceFactory.h"
 #include "position.h"
-#include "move.h"
-
-// turn a Position into "e2" for printing
-std::string sq(const Position &p) {
-    std::string s;
-    s += static_cast<char>('a' + p.col);
-    s += static_cast<char>('8' - p.row);
-    return s;
-}
-
-void printMoves(const std::vector<Move> &moves) {
-    for (const auto &m : moves) {
-        std::cout << sq(m.from) << " -> " << sq(m.to) << "\n";
-    }
-    std::cout << "Total: " << moves.size() << "\n";
-}
 
 int main() {
-    // ---------- Test 1: pinned bishop ----------
-    Board b;
-    b.placePiece(makePiece('K'), Position::fromString("e1"));
-    b.placePiece(makePiece('B'), Position::fromString("e2"));
-    b.placePiece(makePiece('r'), Position::fromString("e8"));
+    std::cout << std::boolalpha;
 
-    std::cout << "Test 1: bishop on e2 is pinned by the rook\n" << b;
-    std::cout << "Legal moves for white (expect only king moves: d1 f1 d2 f2, total 4):\n";
-    printMoves(b.legalMoves(Colour::WHITE));
+    // ---------- Checkmate: back-rank mate ----------
+    Board m;
+    m.placePiece(makePiece('K'), Position::fromString("g1"));
+    m.placePiece(makePiece('P'), Position::fromString("f2"));
+    m.placePiece(makePiece('P'), Position::fromString("g2"));
+    m.placePiece(makePiece('P'), Position::fromString("h2"));
+    m.placePiece(makePiece('r'), Position::fromString("a1"));
+    std::cout << "Back-rank mate\n" << m;
+    std::cout << "white checkmate (expect true): " << m.isCheckmate(Colour::WHITE) << "\n";
+    std::cout << "white stalemate (expect false): " << m.isStalemate(Colour::WHITE) << "\n\n";
 
-    // ---------- Test 2: starting position ----------
+    // ---------- Stalemate: black king trapped but not in check ----------
     Board s;
-    s.setupStart();
-    std::cout << "\nTest 2: starting position\n";
-    std::cout << "Legal moves for white (expect total 20: 16 pawn + 4 knight):\n";
-    printMoves(s.legalMoves(Colour::WHITE));
+    s.placePiece(makePiece('k'), Position::fromString("h8"));
+    s.placePiece(makePiece('Q'), Position::fromString("g6"));
+    s.placePiece(makePiece('K'), Position::fromString("f7"));
+    std::cout << "Stalemate\n" << s;
+    std::cout << "black checkmate (expect false): " << s.isCheckmate(Colour::BLACK) << "\n";
+    std::cout << "black stalemate (expect true): " << s.isStalemate(Colour::BLACK) << "\n\n";
 
-    // ---------- Test 3: the board is unchanged after legalMoves ----------
-    std::cout << "\nTest 3: board after calling legalMoves (should still be the start)\n" << s;
+    // ---------- Neither: starting position ----------
+    Board n;
+    n.setupStart();
+    std::cout << "Start: white checkmate (expect false): " << n.isCheckmate(Colour::WHITE) << "\n";
+    std::cout << "Start: white stalemate (expect false): " << n.isStalemate(Colour::WHITE) << "\n";
 
     return 0;
 }

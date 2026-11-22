@@ -129,3 +129,11 @@ std::vector<Move> Board::legalMoves(Colour colour){
     } 
     return result;   
 }
+
+bool Board::isCheckmate(Colour colour){
+    return isInCheck(colour) && legalMoves(colour).empty();
+}
+
+bool Board::isStalemate(Colour colour){
+    return !isInCheck(colour) && legalMoves(colour).empty();
+}
