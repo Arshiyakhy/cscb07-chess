@@ -78,3 +78,35 @@ bool Board::isInCheck(Colour colour)const{
     }
     return false;
 }
+
+void Board::applyMove(const Move &m) {
+    if (!m.from.inBounds() || !m.to.inBounds()) return;   // invalid squares
+
+    auto &fromCell = grid[m.from.row][m.from.col];
+    auto &toCell   = grid[m.to.row][m.to.col];
+    if (!fromCell) return;                                 // nothing to move
+
+    UndoInfo info;
+    info.move = m;
+    info.movedBefore = fromCell->getHasMoved();            // BEFORE moving it
+    info.capturedPiece = std::move(toCell);                // take the captured piece out first
+
+    toCell = std::move(fromCell);                          // move the piece
+    toCell->setHasMoved(true);                             // the piece is in toCell now
+
+    history.push_back(std::move(info));                    // save for undo
+}
+
+void Board::undoMove() {
+    if (history.empty()) return;                          // nothing to undo
+
+    UndoInfo info = std::move(history.back());            // take the last entry out
+    history.pop_back();                                   // then remove its empty slot
+
+    auto &fromCell = grid[info.move.from.row][info.move.from.col];
+    auto &toCell   = grid[info.move.to.row][info.move.to.col];
+
+    fromCell = std::move(toCell);                         // piece goes back to 'from'
+    fromCell->setHasMoved(info.movedBefore);              // restore its old flag
+    toCell = std::move(info.capturedPiece);               // captured piece back (or empty)
+}

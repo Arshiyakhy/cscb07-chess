@@ -2,38 +2,47 @@
 #include "board.h"
 #include "pieceFactory.h"
 #include "position.h"
-#include "colour.h"
+#include "move.h"
 
 int main() {
-    std::cout << std::boolalpha;   // print true/false instead of 1/0
+    std::cout << std::boolalpha;
 
-    Board b;   // starts empty, no setupStart()
-    Position e1 = Position::fromString("e1");
+    // ---------- Test 1: normal move + undo on the starting board ----------
+    Board b;
+    b.setupStart();
     Position e2 = Position::fromString("e2");
-    Position e8 = Position::fromString("e8");
+    Position e4 = Position::fromString("e4");
 
-    // Test 1: black rook on e8, white king on e1, nothing between
-    b.placePiece(makePiece('r'), e8);
-    b.placePiece(makePiece('K'), e1);
-    std::cout << b;
-    std::cout << "Test 1, e1 attacked by black (expect true): "
-              << b.isAttacked(e1, Colour::BLACK) << "\n\n";
-    b.isInCheck(Colour::WHITE);
-    // Test 2: white bishop on e2 blocks the rook
-    b.placePiece(makePiece('B'), e2);
-    std::cout << b;
-    std::cout << "Test 2, e1 attacked by black (expect false): "
-              << b.isAttacked(e1, Colour::BLACK) << "\n";
-    b.isInCheck(Colour::BLACK);
-    // Test 3: white never attacks its own king's square
-    std::cout << "Test 3, e1 attacked by white (expect false): "
-              << b.isAttacked(e1, Colour::WHITE) << "\n\n";
+    std::cout << "Test 1: start\n" << b;
 
-    // Test 4: remove the bishop, the attack comes back
-    b.removePiece(e2);
-    std::cout << b;
-    std::cout << "Test 4, e1 attacked by black (expect true): "
-              << b.isAttacked(e1, Colour::BLACK) << "\n";
+    b.applyMove(Move{e2, e4, MoveType::DOUBLE_PAWN});
+    std::cout << "\nAfter e2 -> e4 (pawn should be on e4)\n" << b;
+
+    b.undoMove();
+    std::cout << "\nAfter undo (should be the starting board)\n" << b;
+
+    // hasMoved must be false again, or the pawn could never double-step after this
+    std::cout << "e2 pawn hasMoved after undo (expect false): "
+              << b.pieceAt(e2)->getHasMoved() << "\n";
+
+    // ---------- Test 2: capture + undo ----------
+    Board c;
+    Position d5 = Position::fromString("d5");
+    c.placePiece(makePiece('P'), e4);
+    c.placePiece(makePiece('n'), d5);
+
+    std::cout << "\nTest 2: P on e4, n on d5\n" << c;
+
+    c.applyMove(Move{e4, d5});
+    std::cout << "\nAfter e4 takes d5 (P on d5, knight gone)\n" << c;
+
+    c.undoMove();
+    std::cout << "\nAfter undo (P on e4, n on d5 again)\n" << c;
+
+    // ---------- Test 3: undo with empty history does nothing ----------
+    Board d;
+    d.undoMove();
+    std::cout << "\nTest 3: undo on an empty history didn't crash\n";
 
     return 0;
 }

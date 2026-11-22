@@ -6,10 +6,19 @@
 #include "position.h"
 #include <iostream>
 #include "colour.h"
+#include "move.h"
+#include <vector>
+
+struct UndoInfo{
+    Move move;
+    std::unique_ptr<Piece> capturedPiece;
+    bool movedBefore;
+};
 
 class Board {
 private:
     std::array<std::array<std::unique_ptr<Piece>, 8>, 8> grid;
+    std::vector<UndoInfo> history;
 public:
     void setupStart();
     Piece* pieceAt(const Position &pos) const;
@@ -18,6 +27,8 @@ public:
     friend std::ostream &operator<<(std::ostream &out, const Board &b);
     bool isAttacked(const Position &pos, Colour byColour)const;
     bool isInCheck(Colour colour)const;
+    void applyMove(const Move &m);
+    void undoMove();
 };
 
 #endif 
