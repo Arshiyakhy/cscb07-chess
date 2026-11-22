@@ -18,13 +18,13 @@ int main() {
     std::cout << b;
     std::cout << "Test 1, e1 attacked by black (expect true): "
               << b.isAttacked(e1, Colour::BLACK) << "\n\n";
-
+    b.isInCheck(Colour::WHITE);
     // Test 2: white bishop on e2 blocks the rook
     b.placePiece(makePiece('B'), e2);
     std::cout << b;
     std::cout << "Test 2, e1 attacked by black (expect false): "
               << b.isAttacked(e1, Colour::BLACK) << "\n";
-
+    b.isInCheck(Colour::BLACK);
     // Test 3: white never attacks its own king's square
     std::cout << "Test 3, e1 attacked by white (expect false): "
               << b.isAttacked(e1, Colour::WHITE) << "\n\n";

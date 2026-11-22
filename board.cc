@@ -2,6 +2,7 @@
 #include <string>
 #include "pieceFactory.h"
 #include <vector>
+#include <cctype>
 
 void Board::setupStart(){
     const std::array<std::string, 8>layout = {
@@ -62,6 +63,17 @@ bool Board::isAttacked(const Position &pos, Colour byColour)const{
             for(const auto &m : moves){
                 if(m.to == pos) return true;
             }
+        }
+    }
+    return false;
+}
+
+bool Board::isInCheck(Colour colour)const{
+    for(int r=0; r<8; ++r){
+        for(int c=0; c<8; ++c){
+            Position from{r, c};
+            Piece *p = pieceAt(from); 
+            if(p && p->getColour()==colour && std::toupper(p->symbol())=='K')return isAttacked(from, colour == Colour::WHITE ? Colour::BLACK : Colour::WHITE);
         }
     }
     return false;

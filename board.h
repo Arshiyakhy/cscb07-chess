@@ -17,6 +17,7 @@ public:
     void removePiece(const Position &pos);
     friend std::ostream &operator<<(std::ostream &out, const Board &b);
     bool isAttacked(const Position &pos, Colour byColour)const;
+    bool isInCheck(Colour colour)const;
 };
 
 #endif 
