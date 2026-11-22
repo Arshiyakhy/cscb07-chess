@@ -2,6 +2,8 @@
 #define PAWN_H
 #include "piece.h"
 class Pawn: public Piece{
+private:
+    void addPromotionMoves(std::vector<Move> &moves, const Position &from, const Position &to) const;
 protected:
     char letter() const override;
 public:
