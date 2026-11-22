@@ -15,6 +15,8 @@ private:
 protected:
     // pick a random move from a list (returns Move{} if the list is empty)
     Move randomFrom(const std::vector<Move> &moves);
+    bool isCapture(const Board &b, const Move &m);
+    bool givesCheck(Board &b, const Move &m, Colour colour);
 
 public:
     Strategy() : rng(std::random_device{}()) {}
