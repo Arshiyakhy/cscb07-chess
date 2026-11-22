@@ -33,6 +33,7 @@ public:
     std::vector<Move> legalMoves(Colour colour);
     bool isCheckmate(Colour colour);
     bool isStalemate(Colour colour);
+    const Move* lastMove() const;
 };
 
 #endif 

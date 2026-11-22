@@ -120,7 +120,7 @@ void Board::undoMove() {
     if (info.move.type == MoveType::PROMOTION) {
         toCell = std::move(info.promotedPawn);
     }
-    
+
     fromCell = std::move(toCell);                         // piece goes back to 'from'
     fromCell->setHasMoved(info.movedBefore);              // restore its old flag
     toCell = std::move(info.capturedPiece);               // captured piece back (or empty)
@@ -151,4 +151,9 @@ bool Board::isCheckmate(Colour colour){
 
 bool Board::isStalemate(Colour colour){
     return !isInCheck(colour) && legalMoves(colour).empty();
+}
+
+const Move* Board::lastMove() const{
+    if(history.empty()) return nullptr;
+    return &history.back().move;
 }
