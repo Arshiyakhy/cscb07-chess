@@ -43,7 +43,7 @@ void Game::playTurn(std::istream &args, std::ostream &out)
 
     // 3. play the move FROM THE LIST (it has the right type: castle, en passant...)
     board.applyMove(*chosen);
-    out << board;
+    notifyObservers(board);
 
     // 4. other side's turn, then see if the game ended
     turn = other(turn);

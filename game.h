@@ -7,6 +7,7 @@
 #include "board.h"
 #include "player.h"
 #include "colour.h"
+#include "subject.h"
 
 enum class Result
 {
@@ -16,7 +17,7 @@ enum class Result
     DRAW
 };
 
-class Game
+class Game : public Subject
 {
 private:
     Board board;
@@ -36,6 +37,7 @@ public:
     bool isOver() const { return result != Result::ONGOING; }
     Result getResult() const { return result; }
     const Board &getBoard() const { return board; }
+    void display() const { notifyObservers(board); }
 };
 
 #endif

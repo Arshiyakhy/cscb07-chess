@@ -9,24 +9,35 @@
 #include "game.h"
 #include "player.h"
 #include "scoreBoard.h"
+#include "textDisplay.h"
+#include "colourDisplay.h"
 
 class Controller
 {
 private:
+    std::ostream &out;
+    TextDisplay textDisplay;
+    ColourDisplay colourDisplay;
+    bool useColour;
+
     std::unique_ptr<Game> game;        // null when no game is running
     ScoreBoard score;
 
-    Board setupBoard;                  // built in setup mode, used by the next game
+    Board setupBoard;
     bool hasSetup = false;
     Colour setupTurn = Colour::WHITE;
 
+    Observer *activeDisplay();
     std::unique_ptr<Player> makePlayer(const std::string &type);
-    void startGame(std::istream &args, std::ostream &out);
-    void runSetup(std::istream &in, std::ostream &out);
+    void startGame(std::istream &args);
+    void runSetup(std::istream &in);
+    void switchDisplay(std::istream &args);
     void finishIfOver();
 
 public:
-    void run(std::istream &in, std::ostream &out);
+    Controller(std::ostream &out, bool colour)
+        : out{out}, textDisplay{out}, colourDisplay{out}, useColour{colour} {}
+    void run(std::istream &in);
 };
 
 #endif
