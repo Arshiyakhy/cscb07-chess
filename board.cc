@@ -150,6 +150,15 @@ void Board::applyMove(const Move &m)
     {
         info.capturedPiece = std::move(grid[m.from.row][m.to.col]);
     }
+    // castling: the king already moved above, now move the rook too
+    if (m.type == MoveType::CASTLE)
+    {
+        int row = m.to.row;
+        int rookFrom = (m.to.col == 6) ? 7 : 0; // kingside: h-file, queenside: a-file
+        int rookTo = (m.to.col == 6) ? 5 : 3;   // kingside: f-file, queenside: d-file
+        grid[row][rookTo] = std::move(grid[row][rookFrom]);
+        grid[row][rookTo]->setHasMoved(true);
+    }
     history.push_back(std::move(info)); // save for undo
 }
 
@@ -176,8 +185,45 @@ void Board::undoMove()
         grid[info.move.from.row][info.move.to.col] = std::move(info.capturedPiece);
     else
         toCell = std::move(info.capturedPiece);
+    // castling: move the rook back to its corner
+    if (info.move.type == MoveType::CASTLE)
+    {
+        int row = info.move.to.row;
+        int rookFrom = (info.move.to.col == 6) ? 7 : 0;
+        int rookTo = (info.move.to.col == 6) ? 5 : 3;
+        grid[row][rookFrom] = std::move(grid[row][rookTo]);
+        grid[row][rookFrom]->setHasMoved(false); // it had never moved, or castling wouldn't have been allowed
+    }
 }
+std::vector<Move> Board::castlingMoves(Colour colour) const
+{
+    std::vector<Move> moves;
+    int row = (colour == Colour::WHITE) ? 7 : 0;
+    Colour enemy = (colour == Colour::WHITE) ? Colour::BLACK : Colour::WHITE;
+    Position kingSq{row, 4};
+    // small helpers, only used inside this function
+    auto unmoved = [&](int col, char letter) { // own piece of this type, never moved?
+        Piece *p = pieceAt(Position{row, col});
+        return p && p->getColour() == colour && std::toupper(p->symbol()) == letter && !p->getHasMoved();
+    };
+    auto empty = [&](int col)
+    { return pieceAt(Position{row, col}) == nullptr; };
+    auto safe = [&](int col)
+    { return !isAttacked(Position{row, col}, enemy); };
 
+    // shared conditions: king on e-file, never moved, not in check right now
+    if (!unmoved(4, 'K') || isInCheck(colour))
+        return moves;
+    // kingside: rook on h, f and g empty, f and g not attacked
+    if (unmoved(7, 'R') && empty(5) && empty(6) && safe(5) && safe(6))
+        moves.push_back(Move{kingSq, Position{row, 6}, MoveType::CASTLE});
+
+    // queenside: rook on a, b c d empty, but only d and c must be safe
+    if (unmoved(0, 'R') && empty(1) && empty(2) && empty(3) && safe(3) && safe(2))
+        moves.push_back(Move{kingSq, Position{row, 2}, MoveType::CASTLE});
+
+    return moves;
+}
 std::vector<Move> Board::legalMoves(Colour colour)
 {
     std::vector<Move> result;
@@ -200,6 +246,9 @@ std::vector<Move> Board::legalMoves(Colour colour)
             }
         }
     }
+    std::vector<Move> castling = castlingMoves(colour);
+    result.insert(result.end(), castling.begin(),
+                  castling.end());
     return result;
 }
 
