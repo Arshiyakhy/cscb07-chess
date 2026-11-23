@@ -80,6 +80,15 @@ bool Board::isAttacked(const Position &pos, Colour byColour) const
             Piece *p = pieceAt(from);
             if (!p || p->getColour() != byColour)
                 continue;
+            // pawns: check their two diagonal squares directly,
+            // because their candidate moves only include diagonals with a piece on them
+            if (std::toupper(p->symbol()) == 'P')
+            {
+                int dir = (p->getColour() == Colour::WHITE) ? -1 : 1;
+                if (pos.row == r + dir && (pos.col == c - 1 || pos.col == c + 1))
+                    return true;
+                continue; // a pawn never attacks any other square
+            }
             std::vector<Move> moves = p->candidateMoves(*this, from);
             for (const auto &m : moves)
             {
