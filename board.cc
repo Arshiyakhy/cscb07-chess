@@ -268,3 +268,30 @@ const Move *Board::lastMove() const
         return nullptr;
     return &history.back().move;
 }
+
+bool Board::isValidSetup() const
+{
+    int whiteKings = 0, blackKings = 0;
+    for (int r = 0; r < 8; ++r)
+    {
+        for (int c = 0; c < 8; ++c)
+        {
+            Piece *p = pieceAt(Position{r, c});
+            if (!p)
+                continue;
+            char t = static_cast<char>(std::toupper(static_cast<unsigned char>(p->symbol())));
+            if (t == 'K')
+            {
+                if (p->getColour() == Colour::WHITE)
+                    ++whiteKings;
+                else
+                    ++blackKings;
+            }
+            if (t == 'P' && (r == 0 || r == 7))
+                return false; // pawn on the first or last row
+        }
+    }
+    if (whiteKings != 1 || blackKings != 1)
+        return false; // exactly one king each
+    return !isInCheck(Colour::WHITE) && !isInCheck(Colour::BLACK);
+}

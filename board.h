@@ -38,6 +38,7 @@ public:
     bool isCheckmate(Colour colour);
     bool isStalemate(Colour colour);
     const Move *lastMove() const;
+    bool isValidSetup() const;
 };
 
 #endif
