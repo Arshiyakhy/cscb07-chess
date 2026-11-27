@@ -1,0 +1,23 @@
+game computer2 computer1
+move
+move
+move
+move
+move
+move
+move
+move
+move
+move
+resign
+setup
++ K e1
++ k e8
++ R h1
+= white
+done
+game human computer4
+move e1 g1
+move
+this_line_is_a_typo
+resign
