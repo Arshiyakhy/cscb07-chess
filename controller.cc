@@ -6,6 +6,8 @@
 #include "level2.h"
 #include "level3.h"
 #include "pieceFactory.h"
+#include "level4.h"
+#include "materialEvaluator.h"
 
 Observer *Controller::activeDisplay()
 {
@@ -25,7 +27,8 @@ std::unique_ptr<Player> Controller::makePlayer(const std::string &type)
     if (type == "computer3")
         return std::make_unique<ComputerPlayer>(std::make_unique<Level3>());
     if (type == "computer4")
-        return std::make_unique<ComputerPlayer>(std::make_unique<Level3>()); // TODO: Level4
+        return std::make_unique<ComputerPlayer>(
+            std::make_unique<Level4>(std::make_unique<MaterialEvaluator>(), 3));
     return nullptr;
 }
 
