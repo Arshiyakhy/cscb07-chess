@@ -39,3 +39,27 @@ Press ctrl-D to quit and see the final score.
 | 2 | prefers captures and checks |
 | 3 | weighs what it wins against what it could lose |
 | 4 | looks several moves ahead with alpha-beta search |
+
+## Design overview
+
+| Part | Classes | Pattern |
+|---|---|---|
+| Pieces | `Piece` (abstract), `King`, `Queen`, `Rook`, `Bishop`, `Knight`, `Pawn` | inheritance and polymorphism |
+| Rules engine | `Board`, `Move`, `Position` | legal move generation with apply and undo |
+| Computer players | `Strategy` (abstract), `Level1` to `Level4` | Strategy |
+| Position scoring | `Evaluator` (abstract), `MaterialEvaluator` | Strategy (swappable evaluation for the search) |
+| Players | `Player` (abstract), `HumanPlayer`, `ComputerPlayer` | polymorphism |
+| Game flow | `Controller`, `Game`, `ScoreBoard` | |
+| Displays | `Observer`, `Subject`, `TextDisplay`, `ColourDisplay` | Observer |
+| Piece creation | `makePiece` | Factory |
+
+All memory is managed with `std::unique_ptr`. There is no `new` or `delete` anywhere in the code, and valgrind reports no leaks.
+
+## Testing
+
+Test input files live in `tests/`. Run one by feeding it to the program:
+
+```
+./chess < tests/valgrind.txt
+valgrind --leak-check=full ./chess < tests/valgrind.txt
+```
